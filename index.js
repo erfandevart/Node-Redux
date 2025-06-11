@@ -81,12 +81,7 @@ const rootStore = combineReducers({
 //store
 const store = createStore(rootStore, applyMiddleware(logger));
 console.log(store.getState());
-// {counter: 0, number: 5}
 store.dispatch(incrementCounter());
-// {counter: 1, number: 5}
 store.dispatch(incrementCounterByAmount(10));
-// {counter: 11, number: 5}
 store.dispatch(decrementCounter());
-// {counter: 10, number: 5}
 store.dispatch(incrementNumber());
-// {counter: 1, number: 6}
