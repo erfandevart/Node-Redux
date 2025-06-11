@@ -1,30 +1,92 @@
+const redux = require("redux");
+const createStore = redux.createStore;
+const combineReducers = redux.combineReducers;
+const applyMiddleware = redux.applyMiddleware;
+
+const reduxLogger = require("redux-logger");
+
+const logger = reduxLogger.createLogger();
+
 //action
 function incrementCounter() {
   return { type: "INCREMENT_COUNTER" };
 }
 
-const initialState = {
+//action
+function decrementCounter() {
+  return { type: "DECREMENT_COUNTER" };
+}
+
+//action
+function incrementCounterByAmount(amount) {
+  return { type: "INCREMENT_COUNTER_BY_AMOUNT", payload: amount };
+}
+
+//action
+function incrementNumber() {
+  return { type: "INCREMENT_NUMBER" };
+}
+
+//initialState
+const initialCounterState = {
   counter: 0,
+};
+
+//initialState
+const initialNumberState = {
   number: 5,
 };
 
 //reducer
-const counterReducer = (state = initialState, action) => {
+const numberReducer = (state = initialNumberState, action) => {
   switch (action.type) {
-    case "INCREMENT_COUNTER":
+    case "INCREMENT_NUMBER":
       return {
         ...state,
-        counter: state.counter + 1,
+        number: state.number + 1,
       };
     default:
       return state;
   }
 };
 
+//reducer
+const counterReducer = (state = initialCounterState, action) => {
+  switch (action.type) {
+    case "INCREMENT_COUNTER":
+      return {
+        ...state,
+        counter: state.counter + 1,
+      };
+    case "DECREMENT_COUNTER":
+      return {
+        ...state,
+        counter: state.counter - 1,
+      };
+    case "INCREMENT_COUNTER_BY_AMOUNT":
+      return {
+        ...state,
+        counter: state.counter + action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+const rootStore = combineReducers({
+  counter: counterReducer,
+  number: numberReducer,
+});
+
 //store
-const store = Redux.createStore(counterReducer);
+const store = createStore(rootStore, applyMiddleware(logger));
 console.log(store.getState());
 // {counter: 0, number: 5}
 store.dispatch(incrementCounter());
-console.log(store.getState());
 // {counter: 1, number: 5}
+store.dispatch(incrementCounterByAmount(10));
+// {counter: 11, number: 5}
+store.dispatch(decrementCounter());
+// {counter: 10, number: 5}
+store.dispatch(incrementNumber());
+// {counter: 1, number: 6}
